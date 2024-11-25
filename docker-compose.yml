@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # MySQL 数据库服务
+  mysql:
+    image: mysql:8.0         # 使用 MySQL 8.0 镜像
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword    # 设置 root 用户密码
+      MYSQL_DATABASE: blogdb               # 设置默认数据库
+      MYSQL_USER: bloguser                 # 创建一个新用户
+      MYSQL_PASSWORD: blogpassword         # 新用户的密码
+    ports:
+      - "3306:3306"  # 将容器的 3306 端口映射到主机的 3306 端口
+    volumes:
+      - mysql_data:/var/lib/mysql  # 持久化数据库数据
+
+  # Next.js 服务
+  nextjs:
+    build: .
+    container_name: next_app
+    ports:
+      - "3000:3000"  # 将容器的 3000 端口映射到主机的 3000 端口
+    depends_on:
+      - mysql  # 确保 MySQL 先启动
+    environment:
+      DB_HOST: mysql
+      DB_USER: bloguser
+      DB_PASSWORD: blogpassword
+      DB_NAME: blogdb
+    volumes:
+      - .:/app  # 将当前目录挂载到容器中的 /app 目录
+    command: npm run dev  # 运行 Next.js 开发服务器
+
+volumes:
+  mysql_data:
