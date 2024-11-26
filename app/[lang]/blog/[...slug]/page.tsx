@@ -22,11 +22,11 @@ const layouts = {
 }
 
 export async function generateMetadata(props: {
-  params: Promise<{ lang: string, slug: string[] }>
+  params: Promise<{ lang: string; slug: string[] }>
 }): Promise<Metadata | undefined> {
   const params = await props.params
   const slug = decodeURI(params.slug.join('/'))
-  console.log('slug', slug);
+  console.log('slug', slug)
   const post = allBlogs.find((p) => p.slug === slug)
   const authorList = post?.authors || ['default']
   const authorDetails = authorList.map((author) => {

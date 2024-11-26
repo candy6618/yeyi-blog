@@ -23,7 +23,7 @@ export async function generateStaticParams() {
   return siteMetadata.languages.map((lang) => ({ lang }))
 }
 
-export const metadata:Metadata = {
+export const metadata: Metadata = {
   metadataBase: new URL(siteMetadata.siteUrl),
   title: {
     default: siteMetadata.title,
@@ -63,9 +63,15 @@ export const metadata:Metadata = {
   },
 }
 
-export default async function RootLayout({ children, params }: { children: React.ReactNode, params: { lang: string } }) {
+export default async function RootLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode
+  params: { lang: string }
+}) {
   const basePath = process.env.BASE_PATH || ''
-  const {lang} = await params
+  const { lang } = await params
 
   return (
     <html
@@ -107,7 +113,9 @@ export default async function RootLayout({ children, params }: { children: React
           <SectionContainer>
             <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
               <Header />
-              <main lang={lang} className="mb-auto">{children}</main>
+              <main lang={lang} className="mb-auto">
+                {children}
+              </main>
             </SearchProvider>
             <Footer />
           </SectionContainer>
