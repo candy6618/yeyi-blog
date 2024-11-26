@@ -11,8 +11,9 @@ export const generateStaticParams = async () => {
   return paths
 }
 
-export default async function Page(props: { params: Promise<{ page: string }> }) {
+export default async function Page(props: { params: Promise<{ page: string, lang: string }> }) {
   const params = await props.params
+  const {lang} = params
   const posts = allCoreContent(sortPosts(allBlogs))
   const pageNumber = parseInt(params.page as string)
   const initialDisplayPosts = posts.slice(
@@ -26,6 +27,7 @@ export default async function Page(props: { params: Promise<{ page: string }> })
 
   return (
     <ListLayout
+      lang={lang}
       posts={posts}
       initialDisplayPosts={initialDisplayPosts}
       pagination={pagination}

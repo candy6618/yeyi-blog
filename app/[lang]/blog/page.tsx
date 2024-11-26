@@ -7,7 +7,10 @@ const POSTS_PER_PAGE = 5
 
 export const metadata = genPageMetadata({ title: 'Blog' })
 
-export default function BlogPage({params: {lang}}) {
+export default async function BlogPage(props: {
+  params: Promise<{ lang: string }>
+}) {
+  const {lang} = await props.params
   const posts = allCoreContent(sortPosts(allBlogs))
   const pageNumber = 1
   const initialDisplayPosts = posts.slice(

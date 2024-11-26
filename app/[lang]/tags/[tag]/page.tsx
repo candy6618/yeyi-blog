@@ -34,8 +34,9 @@ export const generateStaticParams = async () => {
   return paths
 }
 
-export default async function TagPage(props: { params: Promise<{ tag: string }> }) {
+export default async function TagPage(props: { params: Promise<{ tag: string, lang:string }> }) {
   const params = await props.params
+  const {lang} = params
   const tag = decodeURI(params.tag)
   // Capitalize first letter and convert space to dash
   const title = tag[0].toUpperCase() + tag.split(' ').join('-').slice(1)
@@ -45,5 +46,5 @@ export default async function TagPage(props: { params: Promise<{ tag: string }> 
   if (filteredPosts.length === 0) {
     return notFound()
   }
-  return <ListLayout posts={filteredPosts} title={title} />
+  return <ListLayout lang={lang} posts={filteredPosts} title={title} />
 }
