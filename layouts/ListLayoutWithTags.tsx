@@ -9,14 +9,14 @@ import type { Blog } from 'contentlayer/generated'
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
-import tagData from 'app/[lang]/tag-data.json'
+import tagData from 'app/[locale]/tag-data.json'
 
 interface PaginationProps {
   totalPages: number
   currentPage: number
 }
 interface ListLayoutProps {
-  lang: string
+  locale: string
   posts: CoreContent<Blog>[]
   title: string
   initialDisplayPosts?: CoreContent<Blog>[]
@@ -64,7 +64,7 @@ function Pagination({ totalPages, currentPage }: PaginationProps) {
 }
 
 export default function ListLayoutWithTags({
-  lang,
+  locale,
   posts,
   title,
   initialDisplayPosts = [],
@@ -92,7 +92,7 @@ export default function ListLayoutWithTags({
                 <h3 className="font-bold uppercase text-primary-500">All Posts</h3>
               ) : (
                 <Link
-                  href={`/${lang}/blog`}
+                  href={`/${locale}/blog`}
                   className="font-bold uppercase text-gray-700 hover:text-primary-500 dark:text-gray-300 dark:hover:text-primary-500"
                 >
                   All Posts
@@ -108,7 +108,7 @@ export default function ListLayoutWithTags({
                         </h3>
                       ) : (
                         <Link
-                          href={`/${lang}/tags/${slug(t)}`}
+                          href={`/${locale}/tags/${slug(t)}`}
                           className="px-3 py-2 text-sm font-medium uppercase text-gray-500 hover:text-primary-500 dark:text-gray-300 dark:hover:text-primary-500"
                           aria-label={`View posts tagged ${t}`}
                         >
@@ -140,7 +140,7 @@ export default function ListLayoutWithTags({
                         <div>
                           <h2 className="text-2xl font-bold leading-8 tracking-tight">
                             <Link
-                              href={`/${lang}/${path}`}
+                              href={`/${locale}/${path}`}
                               className="text-gray-900 dark:text-gray-100"
                             >
                               {title}

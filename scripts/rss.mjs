@@ -3,7 +3,7 @@ import path from 'path'
 import { slug } from 'github-slugger'
 import { escape } from 'pliny/utils/htmlEscaper.js'
 import siteMetadata from '../data/siteMetadata.js'
-import tagData from '../app/[lang]/tag-data.json' assert { type: 'json' }
+import tagData from '../app/[locale]/tag-data.json' assert { type: 'json' }
 import { allBlogs } from '../.contentlayer/generated/index.mjs'
 import { sortPosts } from 'pliny/utils/contentlayer.js'
 
@@ -11,9 +11,9 @@ const outputFolder = process.env.EXPORT ? 'out' : 'public'
 
 const generateRssItem = (config, post) => `
   <item>
-    <guid>${config.siteUrl}/${post.lang}/blog/${post.slug}</guid>
+    <guid>${config.siteUrl}/${post.locale}/blog/${post.slug}</guid>
     <title>${escape(post.title)}</title>
-    <link>${config.siteUrl}/${post.lang}/blog/${post.slug}</link>
+    <link>${config.siteUrl}/${post.locale}/blog/${post.slug}</link>
     ${post.summary && `<description>${escape(post.summary)}</description>`}
     <pubDate>${new Date(post.date).toUTCString()}</pubDate>
     <author>${config.email} (${config.author})</author>
@@ -56,8 +56,12 @@ async function generateRSS(config, allBlogs, page = 'feed.xml') {
   }
 }
 
-const rss = () => {
-  generateRSS(siteMetadata, allBlogs)
-  console.log('RSS feed generated...')
-}
-export default rss
+const rss = async () => {
+  const locales = ['en', 'fr'];
+  for (const locale of locales) {
+    await generateRSS(siteMetadata, allBlogs, locale);
+  }
+  console.log('RSS feeds generated...');
+};
+
+export default rss;

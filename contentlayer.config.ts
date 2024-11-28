@@ -24,6 +24,7 @@ import rehypePrismPlus from 'rehype-prism-plus'
 import rehypePresetMinify from 'rehype-preset-minify'
 import siteMetadata from './data/siteMetadata'
 import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer.js'
+import { fallbackLng, secondLng } from './app/[locale]/i18n/locales'
 
 const root = process.cwd()
 const isProduction = process.env.NODE_ENV === 'production'
@@ -60,22 +61,26 @@ const computedFields: ComputedFields = {
 
 /**
  * Count the occurrences of all tags across blog posts and write to json file
+ * Add logic to your own locales and project
  */
 function createTagCount(allBlogs) {
-  const tagCount: Record<string, number> = {}
+  const tagCount = {
+    [fallbackLng]: {},
+    [secondLng]: {},
+  }
   allBlogs.forEach((file) => {
     if (file.tags && (!isProduction || file.draft !== true)) {
-      file.tags.forEach((tag) => {
+      file.tags.forEach((tag: string) => {
         const formattedTag = slug(tag)
-        if (formattedTag in tagCount) {
-          tagCount[formattedTag] += 1
-        } else {
-          tagCount[formattedTag] = 1
+        if (file.language === fallbackLng) {
+          tagCount[fallbackLng][formattedTag] = (tagCount[fallbackLng][formattedTag] || 0) + 1
+        } else if (file.language === secondLng) {
+          tagCount[secondLng][formattedTag] = (tagCount[secondLng][formattedTag] || 0) + 1
         }
       })
     }
   })
-  writeFileSync('./app/[lang]/tag-data.json', JSON.stringify(tagCount))
+  writeFileSync('./app/[locale]/tag-data.json', JSON.stringify(tagCount))
 }
 
 function createSearchIndex(allBlogs) {
