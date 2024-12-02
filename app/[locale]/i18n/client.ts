@@ -5,7 +5,7 @@ import i18next, { i18n } from 'i18next'
 import { initReactI18next, useTranslation as useTransAlias } from 'react-i18next'
 import resourcesToBackend from 'i18next-resources-to-backend'
 import LanguageDetector from 'i18next-browser-languagedetector'
-import { type LocaleTypes, getOptions, locales } from '../../i18n/settings'
+import { type LocaleTypes, getOptions, locales } from './settings'
 
 const runsOnServerSide = typeof window === 'undefined'
 

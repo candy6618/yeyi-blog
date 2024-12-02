@@ -13,6 +13,7 @@ import { ThemeProviders } from './theme-providers'
 import { dir } from 'i18next'
 import { Metadata } from 'next'
 import { LocaleTypes, locales } from './i18n/settings'
+import { maintitle, maindescription } from '@/data/localeMetadata'
 
 const space_grotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -24,60 +25,65 @@ export async function generateStaticParams() {
   return locales.map((locale) => ({ locale }))
 }
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteMetadata.siteUrl),
-  title: {
-    default: siteMetadata.title,
-    template: `%s | ${siteMetadata.title}`,
-  },
-  description: siteMetadata.description,
-  openGraph: {
-    title: siteMetadata.title,
-    description: siteMetadata.description,
-    url: './',
-    siteName: siteMetadata.title,
-    images: [siteMetadata.socialBanner],
-    locale: 'en_US',
-    type: 'website',
-  },
-  alternates: {
-    canonical: './',
-    types: {
-      'application/rss+xml': `${siteMetadata.siteUrl}/feed.xml`,
+export async function generateMetadata({ params: { locale } }): Promise<Metadata> {
+  return {
+    metadataBase: new URL(siteMetadata.siteUrl),
+    title: {
+      default: maintitle[locale],
+      template: `%s | ${maintitle[locale]}`,
     },
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+    description: maindescription[locale],
+    openGraph: {
+      title: maintitle[locale],
+      description: maindescription[locale],
+      url: './',
+      siteName: maintitle[locale],
+      images: [siteMetadata.socialBanner],
+      locale: locale,
+      type: 'website',
+    },
+    alternates: {
+      canonical: './',
+      types: {
+        'application/rss+xml': `${siteMetadata.siteUrl}/feed.xml`,
+      },
+    },
+    robots: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
-  },
-  twitter: {
-    title: siteMetadata.title,
-    card: 'summary_large_image',
-    images: [siteMetadata.socialBanner],
-  },
+    twitter: {
+      title: maintitle[locale],
+      description: maindescription[locale],
+      site: siteMetadata.siteUrl,
+      creator: siteMetadata.author,
+      card: 'summary_large_image',
+      images: [siteMetadata.socialBanner],
+    },
+  }
 }
 
 export default async function RootLayout({
   children,
-  params,
+  params: { locale },
 }: {
   children: React.ReactNode
-  params: { lang: string }
+  params: { locale: LocaleTypes }
 }) {
+  
   const basePath = process.env.BASE_PATH || ''
-  const { lang } = await params
 
   return (
     <html
-      lang={lang}
-      dir={dir(lang)}
+      lang={locale}
+      dir={dir(locale)}
       className={`${space_grotesk.variable} scroll-smooth`}
       suppressHydrationWarning
     >
@@ -114,7 +120,7 @@ export default async function RootLayout({
           <SectionContainer>
             <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
               <Header />
-              <main lang={lang} className="mb-auto">
+              <main className="mb-auto">
                 {children}
               </main>
             </SearchProvider>

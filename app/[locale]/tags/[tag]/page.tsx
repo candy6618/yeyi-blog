@@ -7,6 +7,11 @@ import tagData from 'app/[locale]/tag-data.json'
 import { genPageMetadata } from 'app/[locale]/seo'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { LocaleTypes } from '../../i18n/settings'
+
+type TagsProps = {
+  params: { locale: LocaleTypes }
+}
 
 export async function generateMetadata(props: {
   params: Promise<{ tag: string }>
@@ -25,8 +30,8 @@ export async function generateMetadata(props: {
   })
 }
 
-export const generateStaticParams = async () => {
-  const tagCounts = tagData as Record<string, number>
+export const generateStaticParams = async ({ params: { locale } }: TagsProps) => {
+  const tagCounts = tagData[locale]
   const tagKeys = Object.keys(tagCounts)
   const paths = tagKeys.map((tag) => ({
     tag: encodeURI(tag),

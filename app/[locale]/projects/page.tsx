@@ -1,8 +1,21 @@
+import { Metadata } from 'next'
 import projectsData from '@/data/projectsData'
 import Card from '@/components/Card'
 import { genPageMetadata } from 'app/[locale]/seo'
+import { createTranslation } from '../i18n/server'
+import { LocaleTypes } from '../i18n/settings'
 
-export const metadata = genPageMetadata({ title: 'Projects' })
+type ProjectsProps = {
+  params: { locale: LocaleTypes }
+}
+
+export async function generateMetadata({ params: { locale } }: ProjectsProps): Promise<Metadata> {
+  const { t } = await createTranslation(locale, 'Projects')
+  return genPageMetadata({
+    title: t('title'),
+    params: { locale: locale },
+  })
+}
 
 export default function Projects() {
   return (

@@ -4,8 +4,7 @@ const siteMetadata = {
   author: 'YEYI',
   headerTitle: 'YEYI的博客',
   description: 'YEYI的博客，记录个人学习到的前端知识，一起成长',
-  languages: ['zh', 'en'],
-  fallbackLanguage: "zh",
+  language: 'en',
   theme: 'system', // system, dark or light
   siteUrl: 'https://yeyi.cc/zh/',
   siteRepo: 'https://github.com/candy6618/yeyi-blog',
@@ -23,7 +22,7 @@ const siteMetadata = {
   instagram: 'https://www.instagram.com',
   medium: 'https://medium.com',
   bluesky: 'https://bsky.app/',
-  locale: 'zh-CN',
+  locale: 'en',
   // set to true if you want a navbar fixed to the top
   stickyNav: false,
   analytics: {

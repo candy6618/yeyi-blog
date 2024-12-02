@@ -13,6 +13,11 @@ import PostBanner from '@/layouts/PostBanner'
 import { Metadata } from 'next'
 import siteMetadata from '@/data/siteMetadata'
 import { notFound } from 'next/navigation'
+import { LocaleTypes } from 'app/[locale]/i18n/settings'
+
+interface BlogPageProps {
+  params: { slug: string[]; locale: LocaleTypes }
+}
 
 const defaultLayout = 'PostLayout'
 const layouts = {
@@ -21,13 +26,9 @@ const layouts = {
   PostBanner,
 }
 
-export async function generateMetadata(props: {
-  params: Promise<{ locale: string; slug: string[] }>
-}): Promise<Metadata | undefined> {
-  const params = await props.params
-  const slug = decodeURI(params.slug.join('/'))
-  console.log('slug', slug)
-  const post = allBlogs.find((p) => p.slug === slug)
+export async function generateMetadata({params: { slug, locale }}:BlogPageProps): Promise<Metadata | undefined> {
+  const dslug = decodeURI(slug.join('/'))
+  const post = allBlogs.filter((p) => p.language === locale).find((p) => p.slug === dslug) as Blog
   const authorList = post?.authors || ['default']
   const authorDetails = authorList.map((author) => {
     const authorResults = allAuthors.find((p) => p.slug === author)
@@ -57,7 +58,7 @@ export async function generateMetadata(props: {
       title: post.title,
       description: post.summary,
       siteName: siteMetadata.title,
-      locale: 'en_US',
+      locale: post.language,
       type: 'article',
       publishedTime: publishedAt,
       modifiedTime: modifiedAt,
@@ -78,19 +79,18 @@ export const generateStaticParams = async () => {
   return allBlogs.map((p) => ({ slug: p.slug.split('/').map((name) => decodeURI(name)) }))
 }
 
-export default async function Page(props: { params: Promise<{ slug: string[] }> }) {
-  const params = await props.params
-  const slug = decodeURI(params.slug.join('/'))
+export default async function Page({ params: { slug, locale } }: BlogPageProps) {
+  const dslug = decodeURI(slug.join('/'))
   // Filter out drafts in production
-  const sortedCoreContents = allCoreContent(sortPosts(allBlogs))
-  const postIndex = sortedCoreContents.findIndex((p) => p.slug === slug)
+  const sortedCoreContents = allCoreContent(sortPosts(allBlogs.filter((p) => p.language === locale)))
+  const postIndex = sortedCoreContents.findIndex((p) => p.slug === dslug)
   if (postIndex === -1) {
     return notFound()
   }
 
   const prev = sortedCoreContents[postIndex + 1]
   const next = sortedCoreContents[postIndex - 1]
-  const post = allBlogs.find((p) => p.slug === slug) as Blog
+  const post = allBlogs.find((p) => p.slug === dslug) as Blog
   const authorList = post?.authors || ['default']
   const authorDetails = authorList.map((author) => {
     const authorResults = allAuthors.find((p) => p.slug === author)
@@ -113,7 +113,7 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Layout content={mainContent} authorDetails={authorDetails} next={next} prev={prev}>
+      <Layout content={mainContent} authorDetails={authorDetails} next={next} prev={prev} params={{locale: locale}}>
         <MDXLayoutRenderer code={post.body.code} components={components} toc={post.toc} />
       </Layout>
     </>
